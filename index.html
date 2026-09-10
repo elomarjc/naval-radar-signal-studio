@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naval Surveillance Radar Signal Processing Console</title>
-    <link rel="stylesheet" href="css/style.css?v=4.0">
+    <link rel="stylesheet" href="css/style.css?v=5.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -573,15 +573,16 @@
         }
     })();
     </script>
-<!-- Interactive Guided Spotlight Tour Engine -->
-    <div class="tour-backdrop" id="tourBackdrop"></div>
+
+<!-- Interactive Guided Yellow Spotlight Tour Engine (Zero Blur) -->
     <div class="tour-card" id="tourCard">
         <div class="tour-badge-row">
             <span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
             <button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
         </div>
         <h4 class="tour-action-title" id="tourTitle">Action Title</h4>
-        <div class="tour-why-box" id="tourWhy"><strong>Why:</strong> Reason</div>
+        <div class="tour-happens-box" id="tourHappens"><strong>⚡ What Happens:</strong> Live reaction</div>
+        <div class="tour-why-box" id="tourWhy"><strong>💡 Why:</strong> Reason</div>
         <div class="tour-footer">
             <div class="tour-dots" id="tourDots"></div>
             <div class="tour-controls">
@@ -600,32 +601,36 @@
     {
         "target": "#ppiCanvas",
         "title": "\ud83d\udc49 Step 1: Observe 360\u00b0 PPI Naval Radar Display",
-        "why": "Sweeps 24 NM maritime surveillance range displaying real-time phosphor persistence decay of naval targets and land mass echoes."
+        "happens": "Antenna sweeps 24 NM surveillance range with phosphor persistence, painting cargo ships, fast RHIBs, and coastlines.",
+        "why": "Provides real-time situational awareness for naval surface warfare and maritime collision avoidance."
     },
     {
         "target": "button[data-mode='OS']",
         "title": "\ud83d\udc49 Step 2: Select 'OS-CFAR' Adaptive Detection",
-        "why": "Standard Cell-Averaging masks adjacent targets; Ordered-Statistic CFAR sorts reference window cells to detect close naval vessels without masking."
+        "happens": "Watch closely spaced vessels: CA-CFAR masked the smaller target, but Ordered-Statistic CFAR clearly detects both contacts.",
+        "why": "Standard CA-CFAR raises detection thresholds when targets are adjacent; OS-CFAR sorts reference cells to prevent masking."
     },
     {
         "target": "#seaSlider",
         "title": "\ud83d\udc49 Step 3: Increase Douglas Sea State to State 5",
-        "why": "Simulates rough non-Gaussian Weibull ocean clutter reflections that cause thousands of false alarms in conventional radar receivers."
+        "happens": "Rough wave clutter covers the PPI scope with intense non-Gaussian Weibull returns that trigger false alarms.",
+        "why": "Simulates storm seas where choppy ocean waves reflect radar energy back into the receiver antenna."
     },
     {
         "target": "#mtiToggle",
         "title": "\ud83d\udc49 Step 4: Toggle '3-Pulse MTI Doppler Filter'",
-        "why": "Pulse-to-pulse delay line canceler [H(z) = (1 - z^-1)^2] rejects DC and stationary ocean clutter while passing high-speed moving targets."
+        "happens": "Stationary ocean clutter and landmass returns vanish from the scope, while high-speed moving vessels remain vivid.",
+        "why": "A 3-pulse Moving Target Indicator delay-line canceler filters out stationary clutter and passes Doppler-shifted targets."
     }
 ];
         const tourKey = 'tour_done_naval-radar-signal-studio';
         let currentStep = 0;
         let highlightedEl = null;
 
-        const backdrop = document.getElementById('tourBackdrop');
         const card = document.getElementById('tourCard');
         const badge = document.getElementById('tourStepBadge');
         const title = document.getElementById('tourTitle');
+        const happens = document.getElementById('tourHappens');
         const why = document.getElementById('tourWhy');
         const dotsContainer = document.getElementById('tourDots');
         const prevBtn = document.getElementById('tourBtnPrev');
@@ -634,7 +639,7 @@
         const launcherBtn = document.getElementById('btnTourLauncher');
         const guideBtn = document.getElementById('guideBtn');
 
-        if (!backdrop || !card) return;
+        if (!card) return;
 
         // Build step dots
         dotsContainer.innerHTML = '';
@@ -648,7 +653,7 @@
             if (window.innerWidth <= 640) {
                 if (targetEl) {
                     const rect = targetEl.getBoundingClientRect();
-                    // If target is in lower half of screen, dock card at top so control is unobstructed!
+                    // If target is in lower half of screen, dock card at top so control is 100% visible!
                     if (rect.top > window.innerHeight * 0.44) {
                         card.style.top = '12px';
                         card.style.bottom = 'auto';
@@ -678,8 +683,8 @@
             let top = rect.bottom + 14;
             let left = rect.left;
 
-            if (top + 210 > window.innerHeight && rect.top > 220) {
-                top = rect.top - 190;
+            if (top + 230 > window.innerHeight && rect.top > 240) {
+                top = rect.top - 210;
             }
             if (left + cardW > window.innerWidth) {
                 left = window.innerWidth - cardW - 20;
@@ -709,7 +714,8 @@
 
             badge.textContent = `Step ${index + 1} of ${steps.length}`;
             title.textContent = step.title;
-            why.innerHTML = `<strong>Why:</strong> ${step.why}`;
+            happens.innerHTML = `<strong>⚡ What Happens:</strong> ${step.happens}`;
+            why.innerHTML = `<strong>💡 Why:</strong> ${step.why}`;
 
             // Update dot indicators
             const dots = dotsContainer.querySelectorAll('.tour-dot');
@@ -723,12 +729,11 @@
                 highlightedEl = targetEl;
                 targetEl.classList.add('tour-spotlight-active');
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-                setTimeout(() => positionCard(targetEl), 150);
+                setTimeout(() => positionCard(targetEl), 120);
             } else {
                 positionCard(null);
             }
 
-            backdrop.classList.add('active');
             card.classList.add('active');
         }
 
@@ -737,7 +742,6 @@
                 highlightedEl.classList.remove('tour-spotlight-active');
                 highlightedEl = null;
             }
-            backdrop.classList.remove('active');
             card.classList.remove('active');
             try {
                 sessionStorage.setItem(tourKey, '1');
@@ -767,8 +771,6 @@
             endTour();
         });
 
-        backdrop.addEventListener('click', endTour);
-
         if (launcherBtn) {
             launcherBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -783,7 +785,7 @@
             });
         }
 
-        // Auto-launch guided spotlight tour on first visit
+        // Auto-launch guided yellow tour on first visit
         window.addEventListener('load', () => {
             setTimeout(() => {
                 try {
