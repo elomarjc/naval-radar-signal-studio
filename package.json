@@ -1,0 +1,11 @@
+{
+  "name": "naval-radar-signal-studio",
+  "version": "1.0.0",
+  "description": "SCANTER Naval Surveillance Radar Signal Processing Console with CFAR, Weibull Sea Clutter & MTI",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/test_radar_dsp.mjs"
+  },
+  "author": "Jacob El-Omar",
+  "license": "MIT"
+}
