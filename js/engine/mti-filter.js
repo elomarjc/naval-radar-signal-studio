@@ -18,9 +18,19 @@ export class MTIFilter {
      * Process 1D range profile at specific azimuth
      */
     process(profile, azimuthDeg) {
-        let sliceIdx = Math.floor(azimuthDeg) % this.numSlices;
+        if (isNaN(azimuthDeg) || azimuthDeg === undefined) azimuthDeg = 0;
+        let sliceIdx = Math.floor(Math.abs(azimuthDeg)) % this.numSlices;
         let z1 = this.frameZ1[sliceIdx];
         let z2 = this.frameZ2[sliceIdx];
+        if (!z1) {
+            console.error("UNDEFINED z1 for sliceIdx:", sliceIdx, "azimuthDeg:", azimuthDeg, "numSlices:", this.numSlices, "frameZ1 length:", this.frameZ1 ? this.frameZ1.length : 'no frameZ1');
+            this.frameZ1[sliceIdx] = new Float32Array(this.numBins);
+            z1 = this.frameZ1[sliceIdx];
+        }
+        if (!z2) {
+            this.frameZ2[sliceIdx] = new Float32Array(this.numBins);
+            z2 = this.frameZ2[sliceIdx];
+        }
 
         let filtered = new Float32Array(this.numBins);
 

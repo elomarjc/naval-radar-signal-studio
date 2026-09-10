@@ -141,6 +141,22 @@ class NavalRadarStudioApp {
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    window.app = new NavalRadarStudioApp();
-});
+function initNavalApp() {
+    try {
+        console.log("Starting NavalRadarStudioApp...");
+        window.app = new NavalRadarStudioApp();
+        console.log("NavalRadarStudioApp started successfully!");
+    } catch (err) {
+        console.error("CRASH IN NAVAL APP:", err);
+        const errDiv = document.createElement('div');
+        errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:20px;z-index:999999;font-size:16px;white-space:pre-wrap;';
+        errDiv.textContent = 'FATAL ERROR:\n' + err.stack;
+        document.body.appendChild(errDiv);
+    }
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initNavalApp);
+} else {
+    initNavalApp();
+}
