@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCANTER Naval Surveillance Radar Signal Processing Console</title>
+    <title>Naval Surveillance Radar Signal Processing Console</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,12 +14,13 @@
     <header class="app-header">
         <div>
             <div class="brand-title">
-                <span>SCANTER Radar Signal Processing Studio</span>
-                <span class="brand-badge">Terma Defense Architecture</span>
+                <span>Maritime Radar Signal Processing Studio</span>
+                <span class="brand-badge">Naval Defense DSP Architecture</span>
             </div>
             <p class="brand-subtitle">Naval Surveillance Radar DSP: CA/GO/OS-CFAR Adaptive Detection, Weibull Sea Clutter & 3-Pulse MTI Doppler Filtering</p>
         </div>
         <div class="header-controls">
+            <button id="guideBtn" class="btn-guide">📖 How to Use & Problem Solved</button>
             <a href="https://github.com/elomarjc/naval-radar-signal-studio" target="_blank" class="btn-link">GitHub Source</a>
         </div>
     </header>
@@ -100,7 +101,7 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">🎛️ Detection Tuning & Clutter Environment</span>
-                <span style="font-size: 0.75rem; color: #ec4899;">SCANTER 5000 Tuning</span>
+                <span style="font-size: 0.75rem; color: #ec4899;">X-Band Transceiver Tuning</span>
             </div>
             <div class="card-body">
                 <div class="control-row">
@@ -147,9 +148,95 @@
     <!-- Footer -->
     <footer style="text-align: center; padding: 20px; font-size: 0.8rem; color: #64748b; border-top: 1px solid #1e293b; margin-top: 20px;">
         Designed & Implemented by <strong>Jacob El-Omar</strong> | Aalborg University — Bachelor's Project in Electronic Engineering<br>
-        Targeting Terma A/S Radar & Sensor Systems R&D in Lystrup / Aarhus
+        Inspired by modern Naval Surveillance & Maritime Defense Radar Signal Processing
     </footer>
 
     <script type="module" src="js/app.js"></script>
+
+    <!-- Interactive Guide & Problem Overview Modal -->
+    <div id="guideModal" class="guide-modal-overlay">
+        <div class="guide-modal-card">
+            <div class="guide-modal-header">
+                <h2>🚢 Maritime Radar Signal Processing Studio</h2>
+                <button id="guideClose" class="guide-modal-close" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="guide-modal-body">
+                <div class="guide-section">
+                    <h3>🎯 The Industrial Problem Solved</h3>
+                    <p>Naval surveillance radars must detect small, fast-moving surface threats (stealth craft, RHIBs) amidst severe non-Gaussian ocean sea clutter (Weibull/K-distribution) and land mass reflections. Standard fixed-threshold systems trigger thousands of false alarms, while standard Cell-Averaging CFAR suffers from target masking—when two vessels are close, the larger vessel raises the detection threshold, blinding the radar to the smaller craft.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>💡 How This Digital Twin Solves It</h3>
+                    <p>Implements a complete naval radar signal chain: 360° Plan Position Indicator (PPI) with phosphor persistence decay, A-Scope oscilloscope, statistical sea clutter generators, 3-Pulse Moving Target Indication (MTI) Doppler filter (canceling stationary clutter), and Ordered-Statistic CFAR (OS-CFAR) to prevent target masking.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🕹️ Interactive Quickstart Tutorial (Try This Now!)</h3>
+                    <ul class="guide-step-list">
+                    <li class="guide-step-item">
+                        <span class="guide-step-num">1</span>
+                        <div class="guide-step-content">
+                            <strong>360° PPI Naval Radar Display:</strong> Watch the 360° PPI scope sweep across 24 NM with tracked targets (RHIB, USV, Cargo Vessel) and green video echoes.
+                        </div>
+                    </li>
+                    <li class="guide-step-item">
+                        <span class="guide-step-num">2</span>
+                        <div class="guide-step-content">
+                            <strong>A-Scope & CFAR Comparison:</strong> On the A-Scope, observe the raw echo signal pulse past the dynamic amber CFAR threshold line. Switch between CA-CFAR, GO-CFAR, and OS-CFAR to see how OS-CFAR prevents target masking when ships are close.
+                        </div>
+                    </li>
+                    <li class="guide-step-item">
+                        <span class="guide-step-num">3</span>
+                        <div class="guide-step-content">
+                            <strong>Sea Clutter & MTI Doppler Processing:</strong> Increase Douglas Sea State to State 5 (rough sea swell), then toggle 3-Pulse MTI Doppler Canceler ON/OFF to observe stationary wave and land clutter cancellation.
+                        </div>
+                    </li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>📊 Telemetry & Control Glossary</h3>
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;">
+                        <li><strong>OS-CFAR (Ordered-Statistic):</strong> Adaptive detection algorithm that sorts reference window cells and selects the k-th rank, preventing close adjacent targets from masking each other.</li><li><strong>MTI Doppler Filter:</strong> Pulse-to-pulse delay line canceler [H(z) = (1 - z^-1)^2] that rejects DC and stationary ground/sea clutter while passing Doppler-shifted moving targets.</li><li><strong>PPI Scope (Plan Position Indicator):</strong> Polar radar display mapping range and bearing with phosphor persistence decay.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="guide-modal-footer">
+                <button id="guideStart" class="btn-guide-start">🚀 Start Interactive Simulator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Toggle Script -->
+    <script>
+        (function() {
+            const guideBtn = document.getElementById('guideBtn');
+            const guideModal = document.getElementById('guideModal');
+            const guideClose = document.getElementById('guideClose');
+            const guideStart = document.getElementById('guideStart');
+
+            function openModal() { if (guideModal) guideModal.classList.add('active'); }
+            function closeModal() { if (guideModal) guideModal.classList.remove('active'); }
+
+            if (guideBtn) guideBtn.addEventListener('click', openModal);
+            if (guideClose) guideClose.addEventListener('click', closeModal);
+            if (guideStart) guideStart.addEventListener('click', closeModal);
+            if (window.location.search.indexOf('guide') !== -1) openModal();
+
+            if (guideModal) {
+                guideModal.addEventListener('click', function(e) {
+                    if (e.target === guideModal) closeModal();
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && guideModal && guideModal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>

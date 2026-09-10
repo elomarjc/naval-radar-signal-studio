@@ -129,7 +129,7 @@ export class PPIScope {
         ctx.font = 'bold 11px Inter, sans-serif';
         ctx.fillStyle = '#f8fafc';
         ctx.textAlign = 'left';
-        ctx.fillText(`SCANTER PPI SCOPE | Bearing: ${radarPhysics.azimuthDeg.toFixed(1)}°`, 12, 20);
+        ctx.fillText(`SURVEILLANCE PPI SCOPE | Bearing: ${radarPhysics.azimuthDeg.toFixed(1)}°`, 12, 20);
 
         ctx.font = '10px Inter, sans-serif';
         ctx.fillStyle = '#94a3b8';

@@ -1,5 +1,5 @@
 /**
- * SCANTER-Class Naval Radar Physical Signal Model
+ * Naval Surveillance Radar Physical Signal Model
  * Models pulse radar transmission, target return scattering, and range-azimuth mapping:
  * - Max instrumented range Rmax = 24 NM (44.4 km)
  * - Pulse Repetition Frequency PRF = 3000 Hz
