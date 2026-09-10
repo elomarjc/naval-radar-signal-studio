@@ -1,174 +1,151 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Naval Surveillance Radar Signal Processing Console</title>
-    <link rel="stylesheet" href="css/style.css?v=5.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Naval Surveillance Radar Signal Processing Console</title>
+<link href="css/style.css?v=8.0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 </head>
 <body>
-    <!-- App Header -->
-    <header class="app-header">
-        <div>
-            <div class="brand-title">
-                <span>Maritime Radar Signal Processing Studio</span>
-                <span class="brand-badge">Naval Defense DSP Architecture</span>
-            </div>
-            <p class="brand-subtitle">Naval Surveillance Radar DSP: CA/GO/OS-CFAR Adaptive Detection, Weibull Sea Clutter & 3-Pulse MTI Doppler Filtering</p>
-        </div>
-        <div class="header-controls">
-            <button id="guideBtn" class="btn-guide">🎮 Guided Tour</button>
-            <a href="https://github.com/elomarjc/naval-radar-signal-studio" target="_blank" class="btn-link">GitHub Source</a>
-        </div>
-    </header>
+<!-- App Header -->
+<header class="app-header">
+<div>
+<div class="brand-title">
+<span>Maritime Radar Signal Processing Studio</span>
+<span class="brand-badge">Naval Defense DSP Architecture</span>
+</div>
+<p class="brand-subtitle">Naval Surveillance Radar DSP: CA/GO/OS-CFAR Adaptive Detection, Weibull Sea Clutter &amp; 3-Pulse MTI Doppler Filtering</p>
+</div>
+<div class="header-controls">
+<button class="btn-guide" id="guideBtn">🎮 Guided Tour</button>
+<a class="btn-link" href="https://github.com/elomarjc/naval-radar-signal-studio" target="_blank">GitHub Source</a>
+</div>
+</header>
+<!-- Telemetry Status Bar -->
+<section class="status-bar">
+<div class="status-item">
+<span class="status-label">Antenna Azimuth:</span>
+<span class="status-val" id="telemAzimuth">045.0°</span>
+</div>
+<div class="status-item">
+<span class="status-label">CFAR Algorithm:</span>
+<span class="status-val" id="telemCfar">OS-CFAR (Pfa: 1e-5)</span>
+</div>
+<div class="status-item">
+<span class="status-label">Doppler Processing:</span>
+<span class="status-pill success" id="telemMti">3-PULSE MTI ACTIVE</span>
+</div>
+<div class="status-item">
+<span class="status-label">Surface Tracks:</span>
+<span class="status-val" id="telemHits">3 Tracked Targets</span>
+</div>
+</section>
+<!-- Main Dashboard Grid -->
+<main class="dashboard-grid">
+<!-- 1. 360° PPI Naval Radar Scope -->
+<div class="card live-sticky-screen">
+<div class="card-header">
+<span class="card-title">📡 360° Plan Position Indicator (PPI)</span>
+<span style="font-size: 0.75rem; color: #10b981;">Phosphor Persistence</span>
+<span class="live-screen-indicator">LIVE MONITOR</span></div>
+<div class="card-body">
+<div class="canvas-container">
+<canvas height="340" id="ppiCanvas" width="420"></canvas>
+</div>
+<div class="control-row">
+<span>Range: 24 NM (44.4 km)</span>
+<span>Coastline: 200° - 250° Land Mass</span>
+</div>
+</div>
+</div>
+<!-- 2. A-Scope Oscilloscope -->
 
-    <!-- Telemetry Status Bar -->
-    <section class="status-bar">
-        <div class="status-item">
-            <span class="status-label">Antenna Azimuth:</span>
-            <span id="telemAzimuth" class="status-val">045.0°</span>
-        </div>
-        <div class="status-item">
-            <span class="status-label">CFAR Algorithm:</span>
-            <span id="telemCfar" class="status-val">OS-CFAR (Pfa: 1e-5)</span>
-        </div>
-        <div class="status-item">
-            <span class="status-label">Doppler Processing:</span>
-            <span id="telemMti" class="status-pill success">3-PULSE MTI ACTIVE</span>
-        </div>
-        <div class="status-item">
-            <span class="status-label">Surface Tracks:</span>
-            <span id="telemHits" class="status-val">3 Tracked Targets</span>
-        </div>
-    </section>
+<!-- 3. CFAR Performance Benchmark -->
 
-    <!-- Main Dashboard Grid -->
-    <main class="dashboard-grid">
-        <!-- 1. 360° PPI Naval Radar Scope -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">📡 360° Plan Position Indicator (PPI)</span>
-                <span style="font-size: 0.75rem; color: #10b981;">Phosphor Persistence</span>
-            </div>
-            <div class="card-body">
-                <div class="canvas-container">
-                    <canvas id="ppiCanvas" width="420" height="340"></canvas>
-                </div>
-                <div class="control-row">
-                    <span>Range: 24 NM (44.4 km)</span>
-                    <span>Coastline: 200° - 250° Land Mass</span>
-                </div>
-            </div>
-        </div>
+<!-- 4. Radar Parameter Controls -->
 
-        <!-- 2. A-Scope Oscilloscope -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">📈 A-Scope Video Return & Adaptive CFAR Threshold</span>
-                <span style="font-size: 0.75rem; color: #38bdf8;">Sliding Window CUT</span>
-            </div>
-            <div class="card-body">
-                <div class="canvas-container">
-                    <canvas id="aScopeCanvas" width="420" height="340"></canvas>
-                </div>
-                <div class="control-row">
-                    <span>Green: Video Echo Signal</span>
-                    <span>Amber: Dynamic CFAR Threshold T</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. CFAR Performance Benchmark -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">⚖️ CFAR Algorithm Architecture Comparison</span>
-                <span style="font-size: 0.75rem; color: #f59e0b;">Clutter vs. Masking</span>
-            </div>
-            <div class="card-body">
-                <div class="canvas-container">
-                    <canvas id="compareCanvas" width="420" height="190"></canvas>
-                </div>
-                <div style="font-size: 0.78rem; color: #64748b;">
+<div class="mobile-controls-pane"><div class="card">
+<div class="card-header">
+<span class="card-title">📈 A-Scope Video Return &amp; Adaptive CFAR Threshold</span>
+<span style="font-size: 0.75rem; color: #38bdf8;">Sliding Window CUT</span>
+</div>
+<div class="card-body">
+<div class="canvas-container">
+<canvas height="340" id="aScopeCanvas" width="420"></canvas>
+</div>
+<div class="control-row">
+<span>Green: Video Echo Signal</span>
+<span>Amber: Dynamic CFAR Threshold T</span>
+</div>
+</div>
+</div><div class="card">
+<div class="card-header">
+<span class="card-title">⚖️ CFAR Algorithm Architecture Comparison</span>
+<span style="font-size: 0.75rem; color: #f59e0b;">Clutter vs. Masking</span>
+</div>
+<div class="card-body">
+<div class="canvas-container">
+<canvas height="190" id="compareCanvas" width="420"></canvas>
+</div>
+<div style="font-size: 0.78rem; color: #64748b;">
                     OS-CFAR sorts reference cells to eliminate target masking when two ships are close.
                 </div>
-            </div>
-        </div>
-
-        <!-- 4. Radar Parameter Controls -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">🎛️ Detection Tuning & Clutter Environment</span>
-                <span style="font-size: 0.75rem; color: #ec4899;">X-Band Transceiver Tuning</span>
-            </div>
-            <div class="card-body">
-                <div class="control-row">
-                    <span>Adaptive CFAR Mode:</span>
-                    <div class="btn-group">
-                        <button class="mode-btn" data-mode="CA">CA-CFAR</button>
-                        <button class="mode-btn" data-mode="GO">GO-CFAR</button>
-                        <button class="mode-btn active" data-mode="OS">OS-CFAR</button>
-                    </div>
-                </div>
-
-                <div class="control-row">
-                    <span>Douglas Sea State (Clutter):</span>
-                    <div class="slider-with-val">
-                        <input type="range" id="seaSlider" min="1" max="6" step="1" value="4">
-                        <span id="seaVal" class="slider-val-readout">State 4</span>
-                    </div>
-                </div>
-
-                <div class="control-row">
-                    <span>False Alarm Rate (Pfa):</span>
-                    <div class="slider-with-val">
-                        <input type="range" id="pfaSlider" min="3" max="7" step="1" value="5">
-                        <span id="pfaVal" class="slider-val-readout">1e-5</span>
-                    </div>
-                </div>
-
-                <div class="control-row">
-                    <span>3-Pulse MTI Doppler Canceler:</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="mtiToggle" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-
-                <div class="control-row">
-                    <span>Inject Maneuvering Target:</span>
-                    <button id="addTargetBtn" class="btn-action">🚤 Add Fast Stealth Craft</button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer style="text-align: center; padding: 20px; font-size: 0.8rem; color: #64748b; border-top: 1px solid #1e293b; margin-top: 20px;">
-        Designed & Implemented by <strong>Jacob El-Omar</strong> | Aalborg University — Bachelor's Project in Electronic Engineering<br>
-        Inspired by modern Naval Surveillance & Maritime Defense Radar Signal Processing
+</div>
+</div><div class="card">
+<div class="card-header">
+<span class="card-title">🎛️ Detection Tuning &amp; Clutter Environment</span>
+<span style="font-size: 0.75rem; color: #ec4899;">X-Band Transceiver Tuning</span>
+</div>
+<div class="card-body">
+<div class="control-row">
+<span>Adaptive CFAR Mode:</span>
+<div class="btn-group">
+<button class="mode-btn" data-mode="CA">CA-CFAR</button>
+<button class="mode-btn" data-mode="GO">GO-CFAR</button>
+<button class="mode-btn active" data-mode="OS">OS-CFAR</button>
+</div>
+</div>
+<div class="control-row">
+<span>Douglas Sea State (Clutter):</span>
+<div class="slider-with-val">
+<input id="seaSlider" max="6" min="1" step="1" type="range" value="4"/>
+<span class="slider-val-readout" id="seaVal">State 4</span>
+</div>
+</div>
+<div class="control-row">
+<span>False Alarm Rate (Pfa):</span>
+<div class="slider-with-val">
+<input id="pfaSlider" max="7" min="3" step="1" type="range" value="5"/>
+<span class="slider-val-readout" id="pfaVal">1e-5</span>
+</div>
+</div>
+<div class="control-row">
+<span>3-Pulse MTI Doppler Canceler:</span>
+<label class="toggle-switch">
+<input checked="" id="mtiToggle" type="checkbox"/>
+<span class="toggle-slider"></span>
+</label>
+</div>
+<div class="control-row">
+<span>Inject Maneuvering Target:</span>
+<button class="btn-action" id="addTargetBtn">🚤 Add Fast Stealth Craft</button>
+</div>
+</div>
+</div></div></main>
+<!-- Footer -->
+<footer style="text-align: center; padding: 20px; font-size: 0.8rem; color: #64748b; border-top: 1px solid #1e293b; margin-top: 20px;">
+        Designed &amp; Implemented by <strong>Jacob El-Omar</strong> | Aalborg University — Bachelor's Project in Electronic Engineering<br/>
+        Inspired by modern Naval Surveillance &amp; Maritime Defense Radar Signal Processing
     </footer>
-
-    <script type="module" src="js/app.js"></script>
-
-    <div class="guide-modal-footer">
-                <button id="guideStart" class="btn-guide-start">🚀 Start Interactive Simulator</button>
-            </div>
-        </div>
-    </div>
-
-    
-
-
-
-    
-
-
-    
-
-    <script>
+<script src="js/app.js" type="module"></script>
+<div class="guide-modal-footer">
+<button class="btn-guide-start" id="guideStart">🚀 Start Interactive Simulator</button>
+</div>
+<script>
     (function() {
         const steps = [
     {
@@ -277,7 +254,17 @@
             if (targetEl) {
                 highlightedEl = targetEl;
                 targetEl.classList.add('tour-spotlight-active');
-                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                if (window.innerWidth <= 640) {
+                if (targetEl.closest('.live-sticky-screen')) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    const rect = targetEl.getBoundingClientRect();
+                    const desiredY = 220 + (window.innerHeight - 220 - 160) / 2;
+                    window.scrollBy({ top: rect.top - desiredY, behavior: 'smooth' });
+                }
+            } else {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+            }
                 setTimeout(() => positionCard(targetEl), 140);
             } else {
                 card.style.top = '50%';
@@ -360,11 +347,7 @@
         }
     })();
     </script>
-
-
-    
-
-    <script>
+<script>
     (function() {
         const steps = [
     {
@@ -573,29 +556,26 @@
         }
     })();
     </script>
-
 <!-- Interactive Guided Yellow Spotlight Tour Engine (Zero Blur) -->
-    <div class="tour-card" id="tourCard">
-        <div class="tour-badge-row">
-            <span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
-            <button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
-        </div>
-        <h4 class="tour-action-title" id="tourTitle">Action Title</h4>
-        <div class="tour-happens-box" id="tourHappens"><strong>⚡ What Happens:</strong> Live reaction</div>
-        <div class="tour-why-box" id="tourWhy"><strong>💡 Why:</strong> Reason</div>
-        <div class="tour-footer">
-            <div class="tour-dots" id="tourDots"></div>
-            <div class="tour-controls">
-                <button class="btn-tour-nav btn-tour-prev" id="tourBtnPrev">⇦ Back</button>
-                <button class="btn-tour-nav btn-tour-next" id="tourBtnNext">Next ➔</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Floating Tour Launcher Pill -->
-    <button class="btn-tour-launcher" id="btnTourLauncher">🎮 Guided Tour</button>
-
-    <script>
+<div class="tour-card" id="tourCard">
+<div class="tour-badge-row">
+<span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
+<button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
+</div>
+<h4 class="tour-action-title" id="tourTitle">Action Title</h4>
+<div class="tour-happens-box" id="tourHappens"><strong>⚡ What Happens:</strong> Live reaction</div>
+<div class="tour-why-box" id="tourWhy"><strong>💡 Why:</strong> Reason</div>
+<div class="tour-footer">
+<div class="tour-dots" id="tourDots"></div>
+<div class="tour-controls">
+<button class="btn-tour-nav btn-tour-prev" id="tourBtnPrev">⇦ Back</button>
+<button class="btn-tour-nav btn-tour-next" id="tourBtnNext">Next ➔</button>
+</div>
+</div>
+</div>
+<!-- Floating Tour Launcher Pill -->
+<button class="btn-tour-launcher" id="btnTourLauncher">🎮 Guided Tour</button>
+<script>
     (function() {
         const steps = [
     {
