@@ -423,4 +423,53 @@ if (document.readyState === 'loading') {
       if (statusSummary) statusSummary.textContent = 'K-CLUTTER ν=0.5';
     });
   }
+
+  // Direct pointer touch drag on vertical HUD rails
+  function attachRadarRailDrag(container, onFracChange) {
+    if (!container) return;
+    container.style.touchAction = 'none';
+    let dragging = false;
+    const handleDrag = (e) => {
+      const rect = container.getBoundingClientRect();
+      const frac = Math.max(0, Math.min(1, (rect.bottom - e.clientY) / rect.height));
+      onFracChange(frac);
+    };
+    container.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      container.setPointerCapture?.(e.pointerId);
+      handleDrag(e);
+    });
+    container.addEventListener('pointermove', (e) => {
+      if (dragging) handleDrag(e);
+    });
+    const stopDrag = (e) => {
+      if (dragging) {
+        dragging = false;
+        try { container.releasePointerCapture?.(e.pointerId); } catch (_) {}
+      }
+    };
+    container.addEventListener('pointerup', stopDrag);
+    container.addEventListener('pointercancel', stopDrag);
+  }
+
+  const seaRailTrack = document.querySelector('.hud-left-rail .hud-rail-track-container');
+  attachRadarRailDrag(seaRailTrack, (frac) => {
+    const val = Math.round(1 + frac * 5);
+    if (dSea) {
+      dSea.value = val;
+      dSea.dispatchEvent(new Event('input', { bubbles: true }));
+      updateSeaHUD(val);
+    }
+  });
+
+  const pfaRailTrack = document.querySelector('.hud-right-rail .hud-rail-track-container');
+  attachRadarRailDrag(pfaRailTrack, (frac) => {
+    const val = Math.round(3 + frac * 4);
+    if (dPfa) {
+      dPfa.value = val;
+      dPfa.dispatchEvent(new Event('input', { bubbles: true }));
+      updatePfaHUD(val);
+    }
+  });
+
 })();
