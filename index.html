@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naval Surveillance Radar Signal Processing Console</title>
-    <link rel="stylesheet" href="css/style.css?v=3.0">
+    <link rel="stylesheet" href="css/style.css?v=4.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
             <p class="brand-subtitle">Naval Surveillance Radar DSP: CA/GO/OS-CFAR Adaptive Detection, Weibull Sea Clutter & 3-Pulse MTI Doppler Filtering</p>
         </div>
         <div class="header-controls">
-            <button id="guideBtn" class="btn-guide">📖 How to Use & Problem Solved</button>
+            <button id="guideBtn" class="btn-guide">🎮 Guided Tour</button>
             <a href="https://github.com/elomarjc/naval-radar-signal-studio" target="_blank" class="btn-link">GitHub Source</a>
         </div>
     </header>
@@ -153,121 +153,655 @@
 
     <script type="module" src="js/app.js"></script>
 
-    <!-- Interactive Guide & Problem Overview Modal -->
-    <div id="guideModal" class="guide-modal-overlay">
-        <div class="guide-modal-card">
-            <div class="guide-modal-header">
-                <h2>🚢 Maritime Radar Signal Processing Studio</h2>
-                <button id="guideClose" class="guide-modal-close" aria-label="Close modal">&times;</button>
-            </div>
-            <div class="guide-modal-body">
-                <div class="guide-section">
-                    <h3>🎯 The Industrial Problem Solved</h3>
-                    <p>Naval surveillance radars must detect small, fast-moving surface threats (stealth craft, RHIBs) amidst severe non-Gaussian ocean sea clutter (Weibull/K-distribution) and land mass reflections. Standard fixed-threshold systems trigger thousands of false alarms, while standard Cell-Averaging CFAR suffers from target masking—when two vessels are close, the larger vessel raises the detection threshold, blinding the radar to the smaller craft.</p>
-                </div>
-
-                <div class="guide-section">
-                    <h3>💡 How This Digital Twin Solves It</h3>
-                    <p>Implements a complete naval radar signal chain: 360° Plan Position Indicator (PPI) with phosphor persistence decay, A-Scope oscilloscope, statistical sea clutter generators, 3-Pulse Moving Target Indication (MTI) Doppler filter (canceling stationary clutter), and Ordered-Statistic CFAR (OS-CFAR) to prevent target masking.</p>
-                </div>
-
-                <div class="guide-section">
-                    <h3>🕹️ Interactive Quickstart Tutorial (Try This Now!)</h3>
-                    <ul class="guide-step-list">
-                    <li class="guide-step-item">
-                        <span class="guide-step-num">1</span>
-                        <div class="guide-step-content">
-                            <strong>360° PPI Naval Radar Display:</strong> Watch the 360° PPI scope sweep across 24 NM with tracked targets (RHIB, USV, Cargo Vessel) and green video echoes.
-                        </div>
-                    </li>
-                    <li class="guide-step-item">
-                        <span class="guide-step-num">2</span>
-                        <div class="guide-step-content">
-                            <strong>A-Scope & CFAR Comparison:</strong> On the A-Scope, observe the raw echo signal pulse past the dynamic amber CFAR threshold line. Switch between CA-CFAR, GO-CFAR, and OS-CFAR to see how OS-CFAR prevents target masking when ships are close.
-                        </div>
-                    </li>
-                    <li class="guide-step-item">
-                        <span class="guide-step-num">3</span>
-                        <div class="guide-step-content">
-                            <strong>Sea Clutter & MTI Doppler Processing:</strong> Increase Douglas Sea State to State 5 (rough sea swell), then toggle 3-Pulse MTI Doppler Canceler ON/OFF to observe stationary wave and land clutter cancellation.
-                        </div>
-                    </li>
-                    </ul>
-                </div>
-
-                <div class="guide-section">
-                    <h3>📊 Telemetry & Control Glossary</h3>
-                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;">
-                        <li><strong>OS-CFAR (Ordered-Statistic):</strong> Adaptive detection algorithm that sorts reference window cells and selects the k-th rank, preventing close adjacent targets from masking each other.</li><li><strong>MTI Doppler Filter:</strong> Pulse-to-pulse delay line canceler [H(z) = (1 - z^-1)^2] that rejects DC and stationary ground/sea clutter while passing Doppler-shifted moving targets.</li><li><strong>PPI Scope (Plan Position Indicator):</strong> Polar radar display mapping range and bearing with phosphor persistence decay.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="guide-modal-footer">
+    <div class="guide-modal-footer">
                 <button id="guideStart" class="btn-guide-start">🚀 Start Interactive Simulator</button>
             </div>
         </div>
     </div>
 
-    <!-- Floating Quick Guide Pill (Always visible & 1-tap accessible on mobile & desktop) -->
-    <button id="guideBtnFloating" class="btn-guide-floating" aria-label="Open Guide">💡 Tutorial & Problem Solved</button>
+    
 
-    <!-- Modal Toggle & Auto-Open Script -->
+
+
+    
+
+
+    
+
     <script>
-        (function() {
-            const guideBtn = document.getElementById('guideBtn');
-            const guideBtnFloating = document.getElementById('guideBtnFloating');
-            const guideModal = document.getElementById('guideModal');
-            const guideClose = document.getElementById('guideClose');
-            const guideStart = document.getElementById('guideStart');
+    (function() {
+        const steps = [
+    {
+        "target": "#ppiCanvas",
+        "title": "\ud83d\udc49 Step 1: Observe 360\u00b0 PPI Naval Radar Display",
+        "why": "Sweeps 24 NM maritime surveillance range displaying real-time phosphor persistence decay of naval targets and land mass echoes."
+    },
+    {
+        "target": "button[data-mode='OS']",
+        "title": "\ud83d\udc49 Step 2: Select 'OS-CFAR' Adaptive Detection",
+        "why": "Standard Cell-Averaging masks adjacent targets; Ordered-Statistic CFAR sorts reference window cells to detect close naval vessels without masking."
+    },
+    {
+        "target": "#seaSlider",
+        "title": "\ud83d\udc49 Step 3: Increase Douglas Sea State to State 5",
+        "why": "Simulates rough non-Gaussian Weibull ocean clutter reflections that cause thousands of false alarms in conventional radar receivers."
+    },
+    {
+        "target": "#mtiToggle",
+        "title": "\ud83d\udc49 Step 4: Toggle '3-Pulse MTI Doppler Filter'",
+        "why": "Pulse-to-pulse delay line canceler [H(z) = (1 - z^-1)^2] rejects DC and stationary ocean clutter while passing high-speed moving targets."
+    }
+];
+        const tourKey = 'tour_done_naval-radar-signal-studio';
+        let currentStep = 0;
+        let highlightedEl = null;
 
-            function openModal() {
-                if (guideModal) {
-                    guideModal.classList.add('active');
-                    guideModal.style.opacity = '1';
-                    guideModal.style.pointerEvents = 'auto';
-                }
+        const backdrop = document.getElementById('tourBackdrop');
+        const card = document.getElementById('tourCard');
+        const badge = document.getElementById('tourStepBadge');
+        const title = document.getElementById('tourTitle');
+        const why = document.getElementById('tourWhy');
+        const dotsContainer = document.getElementById('tourDots');
+        const prevBtn = document.getElementById('tourBtnPrev');
+        const nextBtn = document.getElementById('tourBtnNext');
+        const skipBtn = document.getElementById('tourBtnSkip');
+        const launcherBtn = document.getElementById('btnTourLauncher');
+        const guideBtn = document.getElementById('guideBtn');
+
+        if (!backdrop || !card) return;
+
+        // Build step dots
+        dotsContainer.innerHTML = '';
+        steps.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'tour-dot' + (i === 0 ? ' active' : '');
+            dotsContainer.appendChild(dot);
+        });
+
+        function positionCard(targetEl) {
+            if (window.innerWidth <= 640) {
+                card.style.top = 'auto';
+                card.style.bottom = '12px';
+                card.style.left = '10px';
+                card.style.right = '10px';
+                card.style.transform = 'none';
+                return;
             }
 
-            function closeModal() {
-                if (guideModal) {
-                    guideModal.classList.remove('active');
-                    guideModal.style.opacity = '0';
-                    guideModal.style.pointerEvents = 'none';
-                }
-                try {
-                    sessionStorage.setItem('guide_dismissed_' + window.location.pathname, '1');
-                } catch(e) {}
+            const rect = targetEl.getBoundingClientRect();
+            const cardW = 420;
+            let top = rect.bottom + 14;
+            let left = rect.left;
+
+            if (top + 210 > window.innerHeight && rect.top > 220) {
+                top = rect.top - 190;
+            }
+            if (left + cardW > window.innerWidth) {
+                left = window.innerWidth - cardW - 20;
+            }
+            if (left < 20) left = 20;
+
+            card.style.top = Math.max(20, top) + 'px';
+            card.style.left = left + 'px';
+            card.style.bottom = 'auto';
+            card.style.right = 'auto';
+            card.style.transform = 'none';
+        }
+
+        function showStep(index) {
+            if (index < 0 || index >= steps.length) return;
+            currentStep = index;
+
+            if (highlightedEl) {
+                highlightedEl.classList.remove('tour-spotlight-active');
             }
 
-            if (guideBtn) guideBtn.addEventListener('click', openModal);
-            if (guideBtnFloating) guideBtnFloating.addEventListener('click', openModal);
-            if (guideClose) guideClose.addEventListener('click', closeModal);
-            if (guideStart) guideStart.addEventListener('click', closeModal);
-
-            if (guideModal) {
-                guideModal.addEventListener('click', function(e) {
-                    if (e.target === guideModal) closeModal();
-                });
-            }
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && guideModal && guideModal.classList.contains('active')) {
-                    closeModal();
-                }
-            });
-
-            // Auto-open on initial visit for immediate problem & tutorial clarity on both mobile and desktop
+            const step = steps[index];
+            let targetEl = null;
             try {
-                const dismissed = sessionStorage.getItem('guide_dismissed_' + window.location.pathname);
-                const forceOpen = window.location.search.indexOf('guide') !== -1;
-                if (!dismissed || forceOpen) {
-                    setTimeout(openModal, 120);
-                }
-            } catch(e) {
-                setTimeout(openModal, 120);
+                targetEl = document.querySelector(step.target);
+            } catch(e) {}
+
+            badge.textContent = `Step ${index + 1} of ${steps.length}`;
+            title.textContent = step.title;
+            why.innerHTML = `<strong>Why:</strong> ${step.why}`;
+
+            // Update dot indicators
+            const dots = dotsContainer.querySelectorAll('.tour-dot');
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+            // Button label updates
+            prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+            nextBtn.textContent = index === steps.length - 1 ? 'Finish 🚀' : 'Next ➔';
+
+            if (targetEl) {
+                highlightedEl = targetEl;
+                targetEl.classList.add('tour-spotlight-active');
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                setTimeout(() => positionCard(targetEl), 140);
+            } else {
+                card.style.top = '50%';
+                card.style.left = '50%';
+                card.style.transform = 'translate(-50%, -50%)';
             }
-        })();
+
+            backdrop.classList.add('active');
+            card.classList.add('active');
+        }
+
+        function endTour() {
+            if (highlightedEl) {
+                highlightedEl.classList.remove('tour-spotlight-active');
+                highlightedEl = null;
+            }
+            backdrop.classList.remove('active');
+            card.classList.remove('active');
+            try {
+                sessionStorage.setItem(tourKey, '1');
+            } catch(e) {}
+        }
+
+        function startTour() {
+            showStep(0);
+        }
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            } else {
+                endTour();
+            }
+        });
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStep > 0) showStep(currentStep - 1);
+        });
+
+        skipBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            endTour();
+        });
+
+        backdrop.addEventListener('click', endTour);
+
+        if (launcherBtn) {
+            launcherBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startTour();
+            });
+        }
+
+        if (guideBtn) {
+            guideBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startTour();
+            });
+        }
+
+        // Auto-launch guided spotlight tour on first visit
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    const completed = sessionStorage.getItem(tourKey);
+                    if (!completed) {
+                        startTour();
+                    }
+                } catch(e) {
+                    startTour();
+                }
+            }, 450);
+        });
+
+        // URL parameter override: ?tour=1
+        if (window.location.search.indexOf('tour') !== -1) {
+            setTimeout(startTour, 300);
+        }
+    })();
     </script>
 
+
+    
+
+    <script>
+    (function() {
+        const steps = [
+    {
+        "target": "#ppiCanvas",
+        "title": "\ud83d\udc49 Step 1: Observe 360\u00b0 PPI Naval Radar Display",
+        "why": "Sweeps 24 NM maritime surveillance range displaying real-time phosphor persistence decay of naval targets and land mass echoes."
+    },
+    {
+        "target": "button[data-mode='OS']",
+        "title": "\ud83d\udc49 Step 2: Select 'OS-CFAR' Adaptive Detection",
+        "why": "Standard Cell-Averaging masks adjacent targets; Ordered-Statistic CFAR sorts reference window cells to detect close naval vessels without masking."
+    },
+    {
+        "target": "#seaSlider",
+        "title": "\ud83d\udc49 Step 3: Increase Douglas Sea State to State 5",
+        "why": "Simulates rough non-Gaussian Weibull ocean clutter reflections that cause thousands of false alarms in conventional radar receivers."
+    },
+    {
+        "target": "#mtiToggle",
+        "title": "\ud83d\udc49 Step 4: Toggle '3-Pulse MTI Doppler Filter'",
+        "why": "Pulse-to-pulse delay line canceler [H(z) = (1 - z^-1)^2] rejects DC and stationary ocean clutter while passing high-speed moving targets."
+    }
+];
+        const tourKey = 'tour_done_naval-radar-signal-studio';
+        let currentStep = 0;
+        let highlightedEl = null;
+
+        const backdrop = document.getElementById('tourBackdrop');
+        const card = document.getElementById('tourCard');
+        const badge = document.getElementById('tourStepBadge');
+        const title = document.getElementById('tourTitle');
+        const why = document.getElementById('tourWhy');
+        const dotsContainer = document.getElementById('tourDots');
+        const prevBtn = document.getElementById('tourBtnPrev');
+        const nextBtn = document.getElementById('tourBtnNext');
+        const skipBtn = document.getElementById('tourBtnSkip');
+        const launcherBtn = document.getElementById('btnTourLauncher');
+        const guideBtn = document.getElementById('guideBtn');
+
+        if (!backdrop || !card) return;
+
+        // Build step dots
+        dotsContainer.innerHTML = '';
+        steps.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'tour-dot' + (i === 0 ? ' active' : '');
+            dotsContainer.appendChild(dot);
+        });
+
+        function positionCard(targetEl) {
+            if (window.innerWidth <= 640) {
+                if (targetEl) {
+                    const rect = targetEl.getBoundingClientRect();
+                    // If target is in lower half of screen, dock card at top so control is unobstructed!
+                    if (rect.top > window.innerHeight * 0.44) {
+                        card.style.top = '12px';
+                        card.style.bottom = 'auto';
+                    } else {
+                        card.style.top = 'auto';
+                        card.style.bottom = '12px';
+                    }
+                } else {
+                    card.style.top = 'auto';
+                    card.style.bottom = '12px';
+                }
+                card.style.left = '10px';
+                card.style.right = '10px';
+                card.style.transform = 'none';
+                return;
+            }
+
+            if (!targetEl) {
+                card.style.top = '50%';
+                card.style.left = '50%';
+                card.style.transform = 'translate(-50%, -50%)';
+                return;
+            }
+
+            const rect = targetEl.getBoundingClientRect();
+            const cardW = 420;
+            let top = rect.bottom + 14;
+            let left = rect.left;
+
+            if (top + 210 > window.innerHeight && rect.top > 220) {
+                top = rect.top - 190;
+            }
+            if (left + cardW > window.innerWidth) {
+                left = window.innerWidth - cardW - 20;
+            }
+            if (left < 20) left = 20;
+
+            card.style.top = Math.max(20, top) + 'px';
+            card.style.left = left + 'px';
+            card.style.bottom = 'auto';
+            card.style.right = 'auto';
+            card.style.transform = 'none';
+        }
+
+        function showStep(index) {
+            if (index < 0 || index >= steps.length) return;
+            currentStep = index;
+
+            if (highlightedEl) {
+                highlightedEl.classList.remove('tour-spotlight-active');
+            }
+
+            const step = steps[index];
+            let targetEl = null;
+            try {
+                targetEl = document.querySelector(step.target);
+            } catch(e) {}
+
+            badge.textContent = `Step ${index + 1} of ${steps.length}`;
+            title.textContent = step.title;
+            why.innerHTML = `<strong>Why:</strong> ${step.why}`;
+
+            // Update dot indicators
+            const dots = dotsContainer.querySelectorAll('.tour-dot');
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+            // Button label updates
+            prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+            nextBtn.textContent = index === steps.length - 1 ? 'Finish 🚀' : 'Next ➔';
+
+            if (targetEl) {
+                highlightedEl = targetEl;
+                targetEl.classList.add('tour-spotlight-active');
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                setTimeout(() => positionCard(targetEl), 150);
+            } else {
+                positionCard(null);
+            }
+
+            backdrop.classList.add('active');
+            card.classList.add('active');
+        }
+
+        function endTour() {
+            if (highlightedEl) {
+                highlightedEl.classList.remove('tour-spotlight-active');
+                highlightedEl = null;
+            }
+            backdrop.classList.remove('active');
+            card.classList.remove('active');
+            try {
+                sessionStorage.setItem(tourKey, '1');
+            } catch(e) {}
+        }
+
+        function startTour() {
+            showStep(0);
+        }
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            } else {
+                endTour();
+            }
+        });
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStep > 0) showStep(currentStep - 1);
+        });
+
+        skipBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            endTour();
+        });
+
+        backdrop.addEventListener('click', endTour);
+
+        if (launcherBtn) {
+            launcherBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startTour();
+            });
+        }
+
+        if (guideBtn) {
+            guideBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startTour();
+            });
+        }
+
+        // Auto-launch guided spotlight tour on first visit
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    const completed = sessionStorage.getItem(tourKey);
+                    if (!completed) {
+                        startTour();
+                    }
+                } catch(e) {
+                    startTour();
+                }
+            }, 450);
+        });
+
+        // URL parameter override: ?tour=1
+        if (window.location.search.indexOf('tour') !== -1) {
+            setTimeout(startTour, 300);
+        }
+    })();
+    </script>
+<!-- Interactive Guided Spotlight Tour Engine -->
+    <div class="tour-backdrop" id="tourBackdrop"></div>
+    <div class="tour-card" id="tourCard">
+        <div class="tour-badge-row">
+            <span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
+            <button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
+        </div>
+        <h4 class="tour-action-title" id="tourTitle">Action Title</h4>
+        <div class="tour-why-box" id="tourWhy"><strong>Why:</strong> Reason</div>
+        <div class="tour-footer">
+            <div class="tour-dots" id="tourDots"></div>
+            <div class="tour-controls">
+                <button class="btn-tour-nav btn-tour-prev" id="tourBtnPrev">⇦ Back</button>
+                <button class="btn-tour-nav btn-tour-next" id="tourBtnNext">Next ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Tour Launcher Pill -->
+    <button class="btn-tour-launcher" id="btnTourLauncher">🎮 Guided Tour</button>
+
+    <script>
+    (function() {
+        const steps = [
+    {
+        "target": "#ppiCanvas",
+        "title": "\ud83d\udc49 Step 1: Observe 360\u00b0 PPI Naval Radar Display",
+        "why": "Sweeps 24 NM maritime surveillance range displaying real-time phosphor persistence decay of naval targets and land mass echoes."
+    },
+    {
+        "target": "button[data-mode='OS']",
+        "title": "\ud83d\udc49 Step 2: Select 'OS-CFAR' Adaptive Detection",
+        "why": "Standard Cell-Averaging masks adjacent targets; Ordered-Statistic CFAR sorts reference window cells to detect close naval vessels without masking."
+    },
+    {
+        "target": "#seaSlider",
+        "title": "\ud83d\udc49 Step 3: Increase Douglas Sea State to State 5",
+        "why": "Simulates rough non-Gaussian Weibull ocean clutter reflections that cause thousands of false alarms in conventional radar receivers."
+    },
+    {
+        "target": "#mtiToggle",
+        "title": "\ud83d\udc49 Step 4: Toggle '3-Pulse MTI Doppler Filter'",
+        "why": "Pulse-to-pulse delay line canceler [H(z) = (1 - z^-1)^2] rejects DC and stationary ocean clutter while passing high-speed moving targets."
+    }
+];
+        const tourKey = 'tour_done_naval-radar-signal-studio';
+        let currentStep = 0;
+        let highlightedEl = null;
+
+        const backdrop = document.getElementById('tourBackdrop');
+        const card = document.getElementById('tourCard');
+        const badge = document.getElementById('tourStepBadge');
+        const title = document.getElementById('tourTitle');
+        const why = document.getElementById('tourWhy');
+        const dotsContainer = document.getElementById('tourDots');
+        const prevBtn = document.getElementById('tourBtnPrev');
+        const nextBtn = document.getElementById('tourBtnNext');
+        const skipBtn = document.getElementById('tourBtnSkip');
+        const launcherBtn = document.getElementById('btnTourLauncher');
+        const guideBtn = document.getElementById('guideBtn');
+
+        if (!backdrop || !card) return;
+
+        // Build step dots
+        dotsContainer.innerHTML = '';
+        steps.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'tour-dot' + (i === 0 ? ' active' : '');
+            dotsContainer.appendChild(dot);
+        });
+
+        function positionCard(targetEl) {
+            if (window.innerWidth <= 640) {
+                if (targetEl) {
+                    const rect = targetEl.getBoundingClientRect();
+                    // If target is in lower half of screen, dock card at top so control is unobstructed!
+                    if (rect.top > window.innerHeight * 0.44) {
+                        card.style.top = '12px';
+                        card.style.bottom = 'auto';
+                    } else {
+                        card.style.top = 'auto';
+                        card.style.bottom = '12px';
+                    }
+                } else {
+                    card.style.top = 'auto';
+                    card.style.bottom = '12px';
+                }
+                card.style.left = '10px';
+                card.style.right = '10px';
+                card.style.transform = 'none';
+                return;
+            }
+
+            if (!targetEl) {
+                card.style.top = '50%';
+                card.style.left = '50%';
+                card.style.transform = 'translate(-50%, -50%)';
+                return;
+            }
+
+            const rect = targetEl.getBoundingClientRect();
+            const cardW = 420;
+            let top = rect.bottom + 14;
+            let left = rect.left;
+
+            if (top + 210 > window.innerHeight && rect.top > 220) {
+                top = rect.top - 190;
+            }
+            if (left + cardW > window.innerWidth) {
+                left = window.innerWidth - cardW - 20;
+            }
+            if (left < 20) left = 20;
+
+            card.style.top = Math.max(20, top) + 'px';
+            card.style.left = left + 'px';
+            card.style.bottom = 'auto';
+            card.style.right = 'auto';
+            card.style.transform = 'none';
+        }
+
+        function showStep(index) {
+            if (index < 0 || index >= steps.length) return;
+            currentStep = index;
+
+            if (highlightedEl) {
+                highlightedEl.classList.remove('tour-spotlight-active');
+            }
+
+            const step = steps[index];
+            let targetEl = null;
+            try {
+                targetEl = document.querySelector(step.target);
+            } catch(e) {}
+
+            badge.textContent = `Step ${index + 1} of ${steps.length}`;
+            title.textContent = step.title;
+            why.innerHTML = `<strong>Why:</strong> ${step.why}`;
+
+            // Update dot indicators
+            const dots = dotsContainer.querySelectorAll('.tour-dot');
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+            // Button label updates
+            prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+            nextBtn.textContent = index === steps.length - 1 ? 'Finish 🚀' : 'Next ➔';
+
+            if (targetEl) {
+                highlightedEl = targetEl;
+                targetEl.classList.add('tour-spotlight-active');
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                setTimeout(() => positionCard(targetEl), 150);
+            } else {
+                positionCard(null);
+            }
+
+            backdrop.classList.add('active');
+            card.classList.add('active');
+        }
+
+        function endTour() {
+            if (highlightedEl) {
+                highlightedEl.classList.remove('tour-spotlight-active');
+                highlightedEl = null;
+            }
+            backdrop.classList.remove('active');
+            card.classList.remove('active');
+            try {
+                sessionStorage.setItem(tourKey, '1');
+            } catch(e) {}
+        }
+
+        function startTour() {
+            showStep(0);
+        }
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            } else {
+                endTour();
+            }
+        });
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStep > 0) showStep(currentStep - 1);
+        });
+
+        skipBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            endTour();
+        });
+
+        backdrop.addEventListener('click', endTour);
+
+        if (launcherBtn) {
+            launcherBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startTour();
+            });
+        }
+
+        if (guideBtn) {
+            guideBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startTour();
+            });
+        }
+
+        // Auto-launch guided spotlight tour on first visit
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    const completed = sessionStorage.getItem(tourKey);
+                    if (!completed) {
+                        startTour();
+                    }
+                } catch(e) {
+                    startTour();
+                }
+            }, 450);
+        });
+
+        // URL parameter override: ?tour=1
+        if (window.location.search.indexOf('tour') !== -1) {
+            setTimeout(startTour, 300);
+        }
+    })();
+    </script>
 </body>
 </html>
