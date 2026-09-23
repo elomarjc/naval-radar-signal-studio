@@ -6,7 +6,7 @@ An interactive in-browser radar digital signal processing console demonstrating 
 
 <p align="center">
   <a href="https://elomarjc.github.io/naval-radar-signal-studio/">
-    <img src="assets/naval_radar_showcase.gif" width="100%" alt="Naval Radar Signal Studio 360 PPI Scope" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+    <img src="assets/naval_radar_showcase.gif" width="50%" alt="Naval Radar Signal Studio 360 PPI Scope" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
   </a>
 </p>
 
